@@ -1,4 +1,4 @@
-package aini
+package aconfig
 
 import (
 	"bufio"
@@ -8,21 +8,24 @@ import (
 	"strings"
 )
 
-type Config struct {
+// Ini: 定义ini配置结构
+type Ini struct {
 	filepath string
 	conflist []map[string]map[string]string
 }
 
-func SetConfig(filepath string) *Config {
-	c := new(Config)
-	c.filepath = filepath
+// SetIni: 初始化
+func SetIni(filepath string) *Ini {
+	ini := new(Ini)
+	ini.filepath = filepath
 
-	return c
+	return ini
 }
 
-func (c *Config) GetValue(section, name string) string {
-	c.ReadList()
-	conf := c.ReadList()
+// GetValue: 获取配置值
+func (ini *Ini) GetValue(section, name string) string {
+	ini.ReadList()
+	conf := ini.ReadList()
 	for _, v := range conf {
 		for key, value := range v {
 			if key == section {
@@ -33,9 +36,10 @@ func (c *Config) GetValue(section, name string) string {
 	return "no value"
 }
 
-func (c *Config) SetValue(section, key, value string) bool {
-	c.ReadList()
-	data := c.conflist
+// SetValue: 添加配置值
+func (ini *Ini) SetValue(section, key, value string) bool {
+	ini.ReadList()
+	data := ini.conflist
 	var ok bool
 	var index = make(map[int]bool)
 	var conf = make(map[string]map[string]string)
@@ -54,23 +58,24 @@ func (c *Config) SetValue(section, key, value string) bool {
 	}(index)
 
 	if ok {
-		c.conflist[i][section][key] = value
+		ini.conflist[i][section][key] = value
 		return true
 	} else {
 		conf[section] = make(map[string]string)
 		conf[section][key] = value
-		c.conflist = append(c.conflist, conf)
+		ini.conflist = append(ini.conflist, conf)
 		return true
 	}
 }
 
-func (c *Config) DeleteValue(section, name string) bool {
-	c.ReadList()
-	data := c.conflist
+// DeleteValue: 删除配置值
+func (ini *Ini) DeleteValue(section, name string) bool {
+	ini.ReadList()
+	data := ini.conflist
 	for i, v := range data {
 		for key, _ := range v {
 			if key == section {
-				delete(c.conflist[i][key], name)
+				delete(ini.conflist[i][key], name)
 				return true
 			}
 		}
@@ -78,9 +83,10 @@ func (c *Config) DeleteValue(section, name string) bool {
 	return false
 }
 
-func (c *Config) ReadList() []map[string]map[string]string {
+// ReadList: 读取配置
+func (ini *Ini) ReadList() []map[string]map[string]string {
 
-	file, err := os.Open(c.filepath)
+	file, err := os.Open(ini.filepath)
 	if err != nil {
 		CheckErr(err)
 	}
@@ -110,16 +116,17 @@ func (c *Config) ReadList() []map[string]map[string]string {
 			i := strings.IndexAny(line, "=")
 			value := strings.TrimSpace(line[i+1 : len(line)])
 			data[section][strings.TrimSpace(line[0:i])] = value
-			if c.uniquappend(section) == true {
-				c.conflist = append(c.conflist, data)
+			if ini.uniquappend(section) == true {
+				ini.conflist = append(ini.conflist, data)
 			}
 		}
 
 	}
 
-	return c.conflist
+	return ini.conflist
 }
 
+// CheckErr: 检查错误
 func CheckErr(err error) string {
 	if err != nil {
 		return fmt.Sprintf("Error is :'%s'", err.Error())
@@ -127,8 +134,9 @@ func CheckErr(err error) string {
 	return "Notfound this error"
 }
 
-func (c *Config) uniquappend(conf string) bool {
-	for _, v := range c.conflist {
+// uniquappend: 
+func (ini *Ini) uniquappend(conf string) bool {
+	for _, v := range ini.conflist {
 		for k, _ := range v {
 			if k == conf {
 				return false

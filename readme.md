@@ -1,6 +1,6 @@
 ##安装方法
 
-	go get github.com/aurthur-go/aini
+	go get github.com/aurthur-go/aconfig
 
 ##使用方法
 
