@@ -1,8 +1,8 @@
-##安装方法
+## 安装方法
 
 	go get github.com/aurthur-go/aconfig
 
-##使用方法
+## 使用方法
 
 >ini配置文件格式样列
 	
