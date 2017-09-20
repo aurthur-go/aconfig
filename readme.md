@@ -13,7 +13,7 @@
 
 >初始化
 
-	conf := aconfig.SetConfig("./conf/conf.ini") //goini.SetConfig(filepath) 其中filepath是你ini 配置文件的所在位置
+	conf := aconfig.SetIni("./conf/conf.ini") //aconfig.SetIni(filepath) 其中filepath是你ini 配置文件的所在位置
 
 >获取单个配置信息
 
