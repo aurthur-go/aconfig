@@ -23,7 +23,7 @@ func SetIni(filepath string) *Ini {
 }
 
 // GetSection : 获取某配置
-func (ini *Ini) GetSection(section, name string) map[string]string {
+func (ini *Ini) GetSection(section string) map[string]string {
 	ini.ReadList()
 	conf := ini.ReadList()
 	for _, v := range conf {

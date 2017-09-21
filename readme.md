@@ -15,6 +15,11 @@
 
 	conf := aconfig.SetIni("./conf/conf.ini") //aconfig.SetIni(filepath) 其中filepath是你ini 配置文件的所在位置
 
+>获取一组配置信息
+
+	admin := conf.GetSection("admin") //admin是你的section
+	fmt.Println(admin["username"]) //root
+
 >获取单个配置信息
 
 	username := conf.GetValue("admin", "username") //admin是你的[section]，username是你要获取值的key名称
