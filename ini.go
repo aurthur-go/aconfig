@@ -8,13 +8,13 @@ import (
 	"strings"
 )
 
-// Ini: 定义ini配置结构
+// Ini : 定义ini配置结构
 type Ini struct {
 	filepath string
 	conflist []map[string]map[string]string
 }
 
-// SetIni: 初始化
+// SetIni : 初始化
 func SetIni(filepath string) *Ini {
 	ini := new(Ini)
 	ini.filepath = filepath
@@ -22,7 +22,21 @@ func SetIni(filepath string) *Ini {
 	return ini
 }
 
-// GetValue: 获取配置值
+// GetSection : 获取某配置
+func (ini *Ini) GetSection(section, name string) map[string]string {
+	ini.ReadList()
+	conf := ini.ReadList()
+	for _, v := range conf {
+		for key, value := range v {
+			if key == section {
+				return value
+			}
+		}
+	}
+	return nil
+}
+
+// GetValue : 获取单项配置值
 func (ini *Ini) GetValue(section, name string) string {
 	ini.ReadList()
 	conf := ini.ReadList()
@@ -33,10 +47,10 @@ func (ini *Ini) GetValue(section, name string) string {
 			}
 		}
 	}
-	return "no value"
+	return ""
 }
 
-// SetValue: 添加配置值
+// SetValue : 添加配置值
 func (ini *Ini) SetValue(section, key, value string) bool {
 	ini.ReadList()
 	data := ini.conflist
@@ -59,21 +73,20 @@ func (ini *Ini) SetValue(section, key, value string) bool {
 
 	if ok {
 		ini.conflist[i][section][key] = value
-		return true
 	} else {
 		conf[section] = make(map[string]string)
 		conf[section][key] = value
 		ini.conflist = append(ini.conflist, conf)
-		return true
 	}
+	return true
 }
 
-// DeleteValue: 删除配置值
+// DeleteValue : 删除配置值
 func (ini *Ini) DeleteValue(section, name string) bool {
 	ini.ReadList()
 	data := ini.conflist
 	for i, v := range data {
-		for key, _ := range v {
+		for key := range v {
 			if key == section {
 				delete(ini.conflist[i][key], name)
 				return true
@@ -83,7 +96,7 @@ func (ini *Ini) DeleteValue(section, name string) bool {
 	return false
 }
 
-// ReadList: 读取配置
+// ReadList : 读取配置
 func (ini *Ini) ReadList() []map[string]map[string]string {
 
 	file, err := os.Open(ini.filepath)
@@ -126,7 +139,7 @@ func (ini *Ini) ReadList() []map[string]map[string]string {
 	return ini.conflist
 }
 
-// CheckErr: 检查错误
+// CheckErr : 检查错误
 func CheckErr(err error) string {
 	if err != nil {
 		return fmt.Sprintf("Error is :'%s'", err.Error())
@@ -134,10 +147,10 @@ func CheckErr(err error) string {
 	return "Notfound this error"
 }
 
-// uniquappend: 
+// uniquappend:
 func (ini *Ini) uniquappend(conf string) bool {
 	for _, v := range ini.conflist {
-		for k, _ := range v {
+		for k := range v {
 			if k == conf {
 				return false
 			}
