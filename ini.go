@@ -2,10 +2,12 @@ package aconfig
 
 import (
 	"bufio"
-	"fmt"
+	"errors"
 	"io"
 	"os"
 	"strings"
+
+	"github.com/aurthur-go/autils"
 )
 
 // Ini : 定义ini配置结构
@@ -15,39 +17,47 @@ type Ini struct {
 }
 
 // SetIni : 初始化
-func SetIni(filepath string) *Ini {
+func SetIni(filepath string) (*Ini, error) {
 	ini := new(Ini)
+	if !autils.PathExist(filepath) {
+		return nil, errors.New("Path not exsit")
+	}
 	ini.filepath = filepath
-
-	return ini
+	return ini, nil
 }
 
 // GetSection : 获取某配置
-func (ini *Ini) GetSection(section string) map[string]string {
+func (ini *Ini) GetSection(section string) (map[string]string, error) {
 	ini.ReadList()
-	conf := ini.ReadList()
+	conf, err := ini.ReadList()
+	if err != nil {
+		return nil, err
+	}
 	for _, v := range conf {
 		for key, value := range v {
 			if key == section {
-				return value
+				return value, nil
 			}
 		}
 	}
-	return nil
+	return nil, errors.New("section not exist")
 }
 
 // GetValue : 获取单项配置值
-func (ini *Ini) GetValue(section, name string) string {
+func (ini *Ini) GetValue(section, name string) (string, error) {
 	ini.ReadList()
-	conf := ini.ReadList()
+	conf, err := ini.ReadList()
+	if err != nil {
+		return "", err
+	}
 	for _, v := range conf {
 		for key, value := range v {
 			if key == section {
-				return value[name]
+				return value[name], nil
 			}
 		}
 	}
-	return ""
+	return "", errors.New("value not exist")
 }
 
 // SetValue : 添加配置值
@@ -97,11 +107,11 @@ func (ini *Ini) DeleteValue(section, name string) bool {
 }
 
 // ReadList : 读取配置
-func (ini *Ini) ReadList() []map[string]map[string]string {
+func (ini *Ini) ReadList() ([]map[string]map[string]string, error) {
 
 	file, err := os.Open(ini.filepath)
 	if err != nil {
-		CheckErr(err)
+		return nil, err
 	}
 	defer file.Close()
 	var data map[string]map[string]string
@@ -112,7 +122,7 @@ func (ini *Ini) ReadList() []map[string]map[string]string {
 		line := strings.TrimSpace(l)
 		if err != nil {
 			if err != io.EOF {
-				CheckErr(err)
+				return nil, err
 			}
 			if len(line) == 0 {
 				break
@@ -136,15 +146,7 @@ func (ini *Ini) ReadList() []map[string]map[string]string {
 
 	}
 
-	return ini.conflist
-}
-
-// CheckErr : 检查错误
-func CheckErr(err error) string {
-	if err != nil {
-		return fmt.Sprintf("Error is :'%s'", err.Error())
-	}
-	return "Notfound this error"
+	return ini.conflist, nil
 }
 
 // uniquappend:

@@ -17,18 +17,18 @@
 
 >获取一组配置信息
 
-	admin := conf.GetSection("admin") //admin是你的section
+	admin,_ := conf.GetSection("admin") //admin是你的section
 	fmt.Println(admin["username"]) //root
 
 >获取单个配置信息
 
-	username := conf.GetValue("admin", "username") //admin是你的[section]，username是你要获取值的key名称
+	username,_ := conf.GetValue("admin", "username") //admin是你的[section]，username是你要获取值的key名称
 	fmt.Println(username) //root
 
 >删除一个配置信息
 
 	conf.DeleteValue("admin", "username")	//username 是你删除的key
-	username = conf.GetValue("admin", "username")
+	username,_ = conf.GetValue("admin", "username")
 	if len(username) == 0 {
 		fmt.Println("username is not exists") //this stdout username is not exists
 	}
@@ -36,7 +36,7 @@
 >添加一个配置信息
 
 	conf.SetValue("admin", "username", "aurthur")
-	username = conf.GetValue("admin", "username")
+	username,_ = conf.GetValue("admin", "username")
 	fmt.Println(username) // 添加配置信息如果存在[section]则添加或者修改对应的值，如果不存在则添加section
 
 >获取所有配置信息
