@@ -53,7 +53,9 @@ func (ini *Ini) GetValue(section, name string) (string, error) {
 	for _, v := range conf {
 		for key, value := range v {
 			if key == section {
-				return value[name], nil
+				if _, ok := value[name]; ok {
+					return value[name], nil
+				}
 			}
 		}
 	}
